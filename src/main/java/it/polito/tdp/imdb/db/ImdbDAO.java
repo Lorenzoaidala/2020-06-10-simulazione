@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.tdp.imdb.model.Actor;
+import it.polito.tdp.imdb.model.Adiacenza;
 import it.polito.tdp.imdb.model.Director;
 import it.polito.tdp.imdb.model.Movie;
 
@@ -124,6 +125,34 @@ public class ImdbDAO {
 			while(res.next()) {
 				if(idMap.containsKey(res.getInt("actor_id"))) {
 					result.add(idMap.get(res.getInt("actor_id")));
+				}
+			}
+			conn.close();
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+	
+	public List<Adiacenza> getArchi(Map<Integer,Actor>idMap,String genere){
+		String sql ="SELECT r1.actor_id AS id1, r2.actor_id AS id2, COUNT(DISTINCT (r1.movie_id)) AS peso "
+				+ "FROM movies_genres m, roles r1, roles r2 "
+				+ "WHERE r1.movie_id=m.movie_id AND r2.movie_id=m.movie_id "
+				+ "AND m.genre = ? "
+				+ "AND r1.actor_id<r2.actor_id "
+				+ "GROUP BY r1.actor_id,r2.actor_id";
+		
+		List<Adiacenza> result = new LinkedList<>();
+		Connection conn = DBConnect.getConnection();
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, genere);
+			ResultSet res = st.executeQuery();
+			
+			while(res.next()) {
+				if(idMap.containsKey(res.getInt("id1")) && idMap.containsKey(res.getInt("id2"))) {
+					result.add(new Adiacenza(idMap.get(res.getInt("id1")), idMap.get(res.getInt("id2")),res.getDouble("peso")));	
 				}
 			}
 			conn.close();
