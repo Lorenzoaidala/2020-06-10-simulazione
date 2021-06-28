@@ -5,6 +5,7 @@
 package it.polito.tdp.imdb;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.imdb.model.Actor;
@@ -49,7 +50,13 @@ public class FXMLController {
 
     @FXML
     void doAttoriSimili(ActionEvent event) {
-
+    	Actor a = boxAttore.getValue();
+    	if(a==null) {
+    		txtResult.setText("ERRORE - Selezionare un attore.");
+    		return;
+    	}
+    	List<Actor> result = model.getAttoriSimili(a);
+    	txtResult.appendText(result.toString()+"\n");
     }
 
     @FXML
