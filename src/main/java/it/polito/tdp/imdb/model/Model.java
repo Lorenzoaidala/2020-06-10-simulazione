@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
 
 import it.polito.tdp.imdb.db.ImdbDAO;
 
@@ -22,5 +24,10 @@ public class Model {
 	}
 	public List<String> getGeneri(){
 		return dao.getGeneri();
+	}
+	
+	public void creaGrafo(String genere) {
+		this.grafo= new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+		Graphs.addAllVertices(this.grafo, dao.getVertici(idMap, genere));
 	}
 }
